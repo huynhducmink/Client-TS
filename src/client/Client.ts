@@ -4428,7 +4428,19 @@ export class Client extends GameShell {
             const yaw: number = (this.orbitCameraYaw + this.macroCameraAngle) & 0x7ff;
 
             if (this.localPlayer) {
-                this.camFollow(pitch, yaw, this.orbitCameraX, this.getAvH(this.localPlayer.x, this.localPlayer.z, this.minusedlevel) - 50, this.orbitCameraZ, pitch * 3 + 600);
+                this.camFollow(
+                    pitch,
+                    yaw,
+                    // size of a game square is 128
+                    // X axis is West to East
+                    this.localPlayer.x,
+                    // targetY is height, (from feet up to waist so when zoom in, the focus is middle of player)
+                    // if not -50, the focus will be at character feet
+                    // y point down
+                    this.getAvH(this.localPlayer.x, this.localPlayer.z, this.minusedlevel) - 50,
+                    // Z is from Sount to North
+                    this.localPlayer.z,
+                    pitch * 3 + 600 * this.cameraZoom);
             }
         }
 

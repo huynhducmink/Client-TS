@@ -36,6 +36,9 @@ export default abstract class GameShell {
     protected keyQueueReadPos: number = 0;
     protected keyQueueWritePos: number = 0;
 
+    /// mouse zoom
+    public cameraZoom: number = 1;
+
     /// custom
     protected resizeToFit: boolean = false;
     protected tfps: number = 50;
@@ -89,6 +92,7 @@ export default abstract class GameShell {
 
         canvas.onkeydown = this.onkeydown.bind(this);
         canvas.onkeyup = this.onkeyup.bind(this);
+        canvas.onwheel = this.onwheel.bind(this);
 
         canvas.onmousedown = this.onmousedown.bind(this);
         canvas.onpointerdown = this.onpointerdown.bind(this);
@@ -507,6 +511,21 @@ export default abstract class GameShell {
 
         if (!CanvasEnabledKeys.includes(e.key)) {
             e.preventDefault();
+        }
+    }
+
+    private onwheel(e: WheelEvent) {
+        if (e.deltaY > 0) {
+        //zoom in, (scroll down)
+            if (this.cameraZoom < 2.8) {
+                //Max zoom out limit without rendering issues.
+                this.cameraZoom += 0.2;
+            }
+        } else {
+            //zoom out, (scroll up)
+            if (this.cameraZoom > 0) {
+                this.cameraZoom -= 0.2;
+            }
         }
     }
 
