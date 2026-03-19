@@ -111,6 +111,11 @@ export class Client extends GameShell {
     private mouseTrackedDelta: number = 0;
     private focusIn: boolean = false;
 
+    private mouseMoveCameraXSpeed: number = 2
+    private mouseMoveCameraYSpeed: number = 2
+    private mouseMiddleDownX: number = 0
+    private mouseMiddleDownY: number = 0
+
     private showFps: boolean = false;
     private rebootTimer: number = 0;
 
@@ -3492,9 +3497,18 @@ export class Client extends GameShell {
         } else {
             this.orbitCameraPitchVelocity = (this.orbitCameraPitchVelocity / 2) | 0;
         }
+        this.orbitCameraYaw = ((this.orbitCameraYaw + this.orbitCameraYawVelocity / 2) | 0) & 0x7ff; //mod 2048, put value into 0-2047 range
+        // move orbit camera with middle mouse button
+        if (this.mouseButton === 3) {
+            this.orbitCameraYaw = ((this.orbitCameraYaw - (this.mouseX - this.mouseMiddleDownX) * this.mouseMoveCameraXSpeed) | 0) & 0x7ff;
+            this.mouseMiddleDownX = this.mouseX
+        }
 
-        this.orbitCameraYaw = ((this.orbitCameraYaw + this.orbitCameraYawVelocity / 2) | 0) & 0x7ff;
         this.orbitCameraPitch += (this.orbitCameraPitchVelocity / 2) | 0;
+        if (this.mouseButton === 3) {
+            this.orbitCameraPitch = (this.orbitCameraPitch + (this.mouseY - this.mouseMiddleDownY) * this.mouseMoveCameraYSpeed) | 0;
+            this.mouseMiddleDownY = this.mouseY
+        }
 
         if (this.orbitCameraPitch < 128) {
             this.orbitCameraPitch = 128;
@@ -8496,8 +8510,16 @@ export class Client extends GameShell {
             }
         }
     }
-
     private mouseLoop(): void {
+        if (this.mouseClickButton === 3) {
+            this.mouseMiddleDownX = this.mouseClickX
+            this.mouseMiddleDownY = this.mouseClickY
+            return;
+        }
+        // mouseButton === 0 when mouseUp
+        // if (this.mouseButton === 0) {
+        // do not return in here
+        // }
         if (this.objDragArea !== 0) {
             return;
         }
@@ -10183,6 +10205,7 @@ export class Client extends GameShell {
                 if (child.scrollHeight > child.height) {
                     this.drawScrollbar(childX + child.width, childY, child.scrollPos, child.scrollHeight, child.height);
                 }
+                //Inventory draw system
             } else if (child.type === ComponentType.TYPE_INV) {
                 let slot: number = 0;
 

@@ -310,10 +310,20 @@ export default abstract class GameShell {
         this.mouseX = x;
         this.mouseY = y;
 
-        if (e.button === 2) {
+        // HDM_TODO: refactor and use correct button idendifier
+        if (e.button === 1) { // wheel button
+            this.nextMouseClickButton = 3;
+            this.mouseButton = 3;
+        }
+        else if (e.button === 2) { // right mouse click
             this.nextMouseClickButton = 2;
             this.mouseButton = 2;
-        } else {
+        }
+        else if (e.button === 0){ // left mouse click
+            this.nextMouseClickButton = 1; // currently keep 1 following legacy code
+            this.mouseButton = 1;
+        }
+        else { // default to left mouse click if not recognize what mouse button is pressed
             this.nextMouseClickButton = 1;
             this.mouseButton = 1;
         }
